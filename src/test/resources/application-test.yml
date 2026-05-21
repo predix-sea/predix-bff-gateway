@@ -1,0 +1,37 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  flyway:
+    enabled: false
+  data:
+    redis:
+      host: localhost
+      port: 6370
+
+predix:
+  jwt:
+    secret: test-secret-key-at-least-32-characters
+  compliance:
+    block-mainland-china: true
+    geoip-database-path:
+  rate-limit:
+    enabled: false
+  services:
+    market-schema:
+      base-url: http://localhost:18081
+    matching:
+      base-url: http://localhost:18082
+    bacp:
+      base-url: http://localhost:18083
+    indexer:
+      base-url: http://localhost:18084
+    oracle-ops:
+      base-url: http://localhost:18085

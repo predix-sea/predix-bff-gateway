@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/predix_bff
+  data:
+    redis:
+      host: localhost
+
+predix:
+  jwt:
+    secret: dev-only-secret-key-min-32-chars-long!!
+  compliance:
+    block-mainland-china: true
+
+logging:
+  level:
+    com.predix.bff: DEBUG
