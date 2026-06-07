@@ -35,9 +35,9 @@ public class AuthService {
         this.siweProperties = properties.siwe();
     }
 
-    public NonceResponse createNonce() {
+    public NonceResponse createNonce(String walletAddress) {
         String nonce = nonceService.generateNonce();
-        String message = buildSiweMessage(nonce);
+        String message = buildSiweMessage(nonce, walletAddress);
         return new NonceResponse(nonce, message, siweProperties.domain());
     }
 
@@ -73,11 +73,11 @@ public class AuthService {
         return new MeResponse(user.walletAddress(), user.chainId(), user.kycStatus());
     }
 
-    private String buildSiweMessage(String nonce) {
+    private String buildSiweMessage(String nonce, String walletAddress) {
         return """
                 %s wants you to sign in with your Ethereum account:
                 
-                predix-bff-gateway
+                %s
                 
                 Sign in to PrediX BFF Gateway
                 
@@ -86,6 +86,6 @@ public class AuthService {
                 Chain ID: 1
                 Nonce: %s
                 Issued At: %s
-                """.formatted(siweProperties.domain(), siweProperties.uri(), nonce, java.time.Instant.now());
+                """.formatted(siweProperties.domain(), walletAddress, siweProperties.uri(), nonce, java.time.Instant.now());
     }
 }
