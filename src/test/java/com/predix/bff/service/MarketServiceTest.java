@@ -57,20 +57,26 @@ class MarketServiceTest {
 
     @Test
     void listMarkets() {
-        schemaServer.enqueue(new MockResponse().setBody("[{\"id\":\"m1\"}]").addHeader("Content-Type", "application/json"));
+        schemaServer.enqueue(new MockResponse().setBody("""
+                {"code":"0","message":"Success","data":{"content":[{"id":"m1"}],"page":0,"size":20,"totalElements":1,"totalPages":1}}
+                """).addHeader("Content-Type", "application/json"));
         assertThat(marketService.listMarkets()).hasSize(1);
     }
 
     @Test
     void getMarket_enriched() {
-        schemaServer.enqueue(new MockResponse().setBody("{\"id\":\"m1\",\"name\":\"Test\"}").addHeader("Content-Type", "application/json"));
+        schemaServer.enqueue(new MockResponse().setBody("""
+                {"code":"0","message":"Success","data":{"id":"m1","title":"Test"}}
+                """).addHeader("Content-Type", "application/json"));
         Map<String, Object> market = marketService.getMarket("m1");
         assertThat(market).containsEntry("source", "market-schema");
     }
 
     @Test
     void getOrderbook() {
-        schemaServer.enqueue(new MockResponse().setBody("{\"bids\":[]}").addHeader("Content-Type", "application/json"));
+        schemaServer.enqueue(new MockResponse().setBody("""
+                {"code":"0","message":"Success","data":{"bids":[]}}
+                """).addHeader("Content-Type", "application/json"));
         assertThat(marketService.getOrderbook("m1")).containsKey("bids");
     }
 

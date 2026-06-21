@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.util.retry.Retry;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 
 public abstract class DownstreamClientSupport {
@@ -65,6 +66,36 @@ public abstract class DownstreamClientSupport {
 
     private boolean isRetryable(Throwable t) {
         return t instanceof WebClientResponseException ex && ex.getStatusCode().is5xxServerError();
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Map<String, Object> asMap(Object value) {
+        if (value instanceof Map<?, ?> map) {
+            return (Map<String, Object>) map;
+        }
+        return Map.of();
+    }
+
+    @SuppressWarnings("unchecked")
+    protected List<Map<String, Object>> asMapList(Object value) {
+        if (!(value instanceof List<?> list)) {
+            return List.of();
+        }
+        return list.stream().map(this::asMap).toList();
+    }
+
+    /** Unwrap market-schema {@code ApiResponse.data.content} page payload. */
+    protected List<Map<String, Object>> unwrapPageContent(Map<String, Object> envelope) {
+        Object data = envelope.get("data");
+        if (data instanceof Map<?, ?> page) {
+            return asMapList(page.get("content"));
+        }
+        return List.of();
+    }
+
+    /** Unwrap market-schema {@code ApiResponse.data} object payload. */
+    protected Map<String, Object> unwrapData(Map<String, Object> envelope) {
+        return asMap(envelope.get("data"));
     }
 
     @SuppressWarnings("unchecked")

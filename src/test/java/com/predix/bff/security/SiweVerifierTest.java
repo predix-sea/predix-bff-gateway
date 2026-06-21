@@ -34,6 +34,28 @@ class SiweVerifierTest {
     }
 
     @Test
+    void verify_metamaskStyleSiweMessage() {
+        String message =
+                """
+                predix.local wants you to sign in with your Ethereum account:
+
+                0x8363B9e48f4c13A5Dfab27fdE2E7dcf7C6aD671A
+
+                Sign in to PrediX BFF Gateway
+
+                URI: http://localhost:3001
+                Version: 1
+                Chain ID: 1
+                Nonce: QfpziTmBFnEXiky9kNbWwPS6gpKC6sp2El-wcC-4xgI
+                Issued At: 2026-06-12T13:16:03.471096Z
+                """;
+        String signature =
+                "0x99b279fed81f28904ef4601972e2b7f39289029c625ad697798e5ab99b02a351538deae5fc37562c8bde09ed9a547317d729dbe5ff75ae01c25733a458990cde1b";
+
+        verifier.verify("0x8363B9e48f4c13A5Dfab27fdE2E7dcf7C6aD671A", message, signature, 1L);
+    }
+
+    @Test
     void verify_invalidSignatureThrows() {
         assertThatThrownBy(() -> verifier.verify("0x0000000000000000000000000000000000000001",
                 "msg", "0x" + "11".repeat(65), 1L))
@@ -41,9 +63,8 @@ class SiweVerifierTest {
     }
 
     private String signMessage(String message, ECKeyPair keyPair) {
-        String prefix = "\u0019Ethereum Signed Message:\n" + message.length();
-        byte[] prefixed = (prefix + message).getBytes(StandardCharsets.UTF_8);
-        Sign.SignatureData sig = Sign.signPrefixedMessage(prefixed, keyPair);
+        Sign.SignatureData sig =
+                Sign.signPrefixedMessage(message.getBytes(StandardCharsets.UTF_8), keyPair);
         byte[] result = new byte[65];
         System.arraycopy(sig.getR(), 0, result, 0, 32);
         System.arraycopy(sig.getS(), 0, result, 32, 32);

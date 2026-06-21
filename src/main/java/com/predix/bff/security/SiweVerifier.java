@@ -48,9 +48,8 @@ public class SiweVerifier {
             byte[] s = Arrays.copyOfRange(signatureBytes, 32, 64);
             Sign.SignatureData signatureData = new Sign.SignatureData(v, r, s);
 
-            String prefix = "\u0019Ethereum Signed Message:\n" + message.length();
-            byte[] prefixed = (prefix + message).getBytes(StandardCharsets.UTF_8);
-            BigInteger publicKey = Sign.signedPrefixedMessageToKey(prefixed, signatureData);
+            byte[] messageBytes = message.getBytes(StandardCharsets.UTF_8);
+            BigInteger publicKey = Sign.signedPrefixedMessageToKey(messageBytes, signatureData);
             return "0x" + Keys.getAddress(publicKey);
         } catch (Exception e) {
             throw new BffException(ErrorCode.AUTH_INVALID_SIGNATURE, "Failed to verify signature");

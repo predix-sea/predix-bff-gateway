@@ -17,14 +17,17 @@ public class MarketSchemaClient extends DownstreamClientSupport {
     }
 
     public List<Map<String, Object>> listMarkets() {
-        return get("/api/v1/markets", new ParameterizedTypeReference<>() {});
+        Map<String, Object> response = get("/api/v1/markets", new ParameterizedTypeReference<>() {});
+        return unwrapPageContent(response);
     }
 
     public Map<String, Object> getMarket(String id) {
-        return get("/api/v1/markets/" + id, new ParameterizedTypeReference<>() {});
+        Map<String, Object> response = get("/api/v1/markets/" + id, new ParameterizedTypeReference<>() {});
+        return unwrapData(response);
     }
 
     public Map<String, Object> getOrderbook(String id) {
-        return get("/api/v1/markets/" + id + "/orderbook", new ParameterizedTypeReference<>() {});
+        Map<String, Object> response = get("/api/v1/markets/" + id + "/orderbook", new ParameterizedTypeReference<>() {});
+        return unwrapData(response);
     }
 }
