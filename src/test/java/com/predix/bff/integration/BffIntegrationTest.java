@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -31,10 +32,12 @@ class BffIntegrationTest {
 
     @Test
     void nonceEndpointPublic() throws Exception {
-        mockMvc.perform(get("/api/v1/auth/siwe/nonce"))
+        mockMvc.perform(get("/api/v1/auth/siwe/nonce")
+                        .param("address", "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("OK"))
-                .andExpect(jsonPath("$.data.nonce").isNotEmpty());
+                .andExpect(jsonPath("$.data.nonce").isNotEmpty())
+                .andExpect(jsonPath("$.data.message", containsString("0xabcdefabcdefabcdefabcdefabcdefabcdefabcd")));
     }
 
     @Test
@@ -85,15 +88,10 @@ class BffIntegrationTest {
     }
 
     @Test
-    void marketsListRequiresAuth() throws Exception {
-        String sessionId = jwtTokenProvider.newSessionId();
-        sessionService.saveSession(sessionId, new SessionUser("0xabcdefabcdefabcdefabcdefabcdefabcdefabcd", 1L, "APPROVED"));
-        String token = jwtTokenProvider.createToken("0xabcdefabcdefabcdefabcdefabcdefabcdefabcd", 1L, sessionId);
-
+    void marketsListPublicWithoutAuth() throws Exception {
         mockMvc.perform(get("/api/v1/markets")
-                        .header("Authorization", "Bearer " + token)
                         .header("X-Forwarded-For", "8.8.8.8"))
-                .andExpect(status().is5xxServerError());
+                .andExpect(status().isBadGateway());
     }
 
     @Test

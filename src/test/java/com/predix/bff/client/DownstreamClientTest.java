@@ -53,7 +53,9 @@ class DownstreamClientTest {
     @Test
     void getMarkets_success() {
         server.enqueue(new MockResponse()
-                .setBody("[{\"id\":\"m1\"}]")
+                .setBody("""
+                        {"code":"0","message":"Success","data":{"content":[{"id":"m1"}],"page":0,"size":20,"totalElements":1,"totalPages":1}}
+                        """)
                 .addHeader("Content-Type", "application/json"));
         List<Map<String, Object>> markets = client.listMarkets();
         assertThat(markets).hasSize(1);

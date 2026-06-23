@@ -18,6 +18,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class AuthServiceTest {
 
+    private static final String WALLET = "0x0000000000000000000000000000000000000001";
+
     private AuthService authService;
     private NonceService nonceService;
     private StringRedisTemplate redis;
@@ -38,15 +40,16 @@ class AuthServiceTest {
     }
 
     @Test
-    void createNonce_returnsMessageWithNonce() {
-        var response = authService.createNonce();
+    void createNonce_returnsMessageWithNonceAndWallet() {
+        var response = authService.createNonce(WALLET);
         assertThat(response.nonce()).isNotBlank();
         assertThat(response.message()).contains(response.nonce());
+        assertThat(response.message()).containsIgnoringCase(WALLET);
     }
 
     @Test
     void verify_invalidSignatureFails() {
-        String nonce = authService.createNonce().nonce();
+        String nonce = authService.createNonce(WALLET).nonce();
         String message = "Login for 0x0000000000000000000000000000000000000001\nNonce: " + nonce;
         SiweVerifyRequest req = new SiweVerifyRequest(
                 "0x0000000000000000000000000000000000000002",

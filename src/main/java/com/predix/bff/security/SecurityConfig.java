@@ -39,6 +39,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_PATHS).permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/siwe/verify").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/markets",
+                                "/api/v1/markets/*",
+                                "/api/v1/markets/*/orderbook").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .addFilterBefore(traceIdFilter, UsernamePasswordAuthenticationFilter.class)

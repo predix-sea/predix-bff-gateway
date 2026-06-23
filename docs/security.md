@@ -10,6 +10,7 @@
 
 - Spring Security stateless filter chain
 - Public: `/api/v1/auth/siwe/nonce`, `/api/v1/auth/siwe/verify`, actuator health, dependency health
+- Public read: `GET /api/v1/markets`, `GET /api/v1/markets/{id}`, `GET /api/v1/markets/{id}/orderbook`
 - All other `/api/v1/**` require `Authorization: Bearer <token>`
 
 ## Input validation
